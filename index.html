@@ -1,0 +1,490 @@
+<!doctype html>
+<html lang="pt-BR" class="scroll-smooth">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Limites Computacionais em Sistemas de Automação</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Inter", sans-serif;
+        background-color: #fcfbf9;
+        color: #1e293b;
+      }
+
+      .chart-container {
+        position: relative;
+        width: 100%;
+        max-width: 800px;
+        margin-left: auto;
+        margin-right: auto;
+        height: 350px;
+        max-height: 400px;
+        overflow: hidden;
+      }
+
+      @media (min-width: 768px) {
+        .chart-container {
+          height: 400px;
+        }
+      }
+
+      .tab-btn.active {
+        border-bottom-width: 4px;
+        border-color: #0f766e;
+        color: #0f766e;
+        font-weight: 600;
+      }
+
+      .turing-tape {
+        display: flex;
+        overflow: hidden;
+        width: 100%;
+        justify-content: center;
+        align-items: center;
+        font-family: monospace;
+        font-size: 1.5rem;
+        background: #e2e8f0;
+        padding: 1rem;
+        border-radius: 0.5rem;
+        box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+      }
+
+      .tape-cell {
+        min-width: 3rem;
+        height: 4rem;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        border: 1px solid #cbd5e1;
+        background: #fff;
+        margin: 0 0.2rem;
+        transition: all 0.3s ease;
+      }
+
+      .tape-cell.active-cell {
+        border: 3px solid #b91c1c;
+        transform: scale(1.1);
+        z-index: 10;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+      }
+
+      #agv-canvas {
+        background-color: #f1f5f9;
+        border: 2px solid #cbd5e1;
+        border-radius: 0.5rem;
+        width: 100%;
+        max-width: 800px;
+        height: 400px;
+        margin: 0 auto;
+        display: block;
+      }
+
+      @keyframes fadeIn {
+        from {
+          opacity: 0;
+        }
+        to {
+          opacity: 1;
+        }
+      }
+
+      .animate-fade-in {
+        animation: fadeIn 0.3s ease-in;
+      }
+    </style>
+  </head>
+  <body class="antialiased flex flex-col min-h-screen">
+    <header
+      class="bg-slate-900 text-white py-12 px-6 shadow-md relative overflow-hidden"
+    >
+      <div
+        class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none"
+        id="binary-bg"
+      ></div>
+      <div class="max-w-6xl mx-auto relative z-10 text-center">
+        <h1 class="text-4xl md:text-5xl font-bold mb-4 tracking-tight">
+          Limites Computacionais em Sistemas de Automação
+        </h1>
+        <p
+          class="text-xl md:text-2xl text-slate-300 font-light max-w-3xl mx-auto"
+        >
+          O que, afinal,
+          <span class="text-amber-400 font-semibold"
+            >não é possível prever</span
+          >
+          em um sistema automatizado?
+        </p>
+      </div>
+    </header>
+
+    <nav class="bg-white sticky top-0 z-50 shadow-sm border-b border-slate-200">
+      <div
+        class="max-w-6xl mx-auto px-4 flex justify-between overflow-x-auto no-scrollbar"
+      >
+        <button
+          class="tab-btn active whitespace-nowrap py-4 px-6 text-slate-500 hover:text-teal-700 transition-colors"
+          data-target="teoria"
+        >
+          1. Fundamentos e Teoria
+        </button>
+        <button
+          class="tab-btn whitespace-nowrap py-4 px-6 text-slate-500 hover:text-teal-700 transition-colors"
+          data-target="aplicacao"
+        >
+          2. Aplicações e Redes Neurais
+        </button>
+        <button
+          class="tab-btn whitespace-nowrap py-4 px-6 text-slate-500 hover:text-teal-700 transition-colors"
+          data-target="verificacao"
+        >
+          3. Verificação Formal (Espaço)
+        </button>
+        <button
+          class="tab-btn whitespace-nowrap py-4 px-6 text-slate-500 hover:text-teal-700 transition-colors"
+          data-target="caso"
+        >
+          4. Estudo de Caso (AGVs)
+        </button>
+      </div>
+    </nav>
+
+    <main class="flex-grow w-full max-w-6xl mx-auto p-6 md:p-8">
+      <section id="teoria" class="tab-content block animate-fade-in">
+        <div class="mb-8">
+          <h2
+            class="text-3xl font-bold text-slate-800 mb-4 border-l-4 border-teal-600 pl-4"
+          >
+            A Ilusão da Previsibilidade Absoluta
+          </h2>
+          <p class="text-lg leading-relaxed text-slate-600 mb-6">
+            Esta seção introduz a base matemática do nosso problema. Na
+            Engenharia de Controle, a intuição dita que sistemas com regras
+            estritas são perfeitamente previsíveis. No entanto, a teoria da
+            computação nos ensina que, em sistemas
+            <strong>Turing-completos</strong>, certas previsões são
+            matematicamente impossíveis. Aqui exploraremos o
+            <em>Problema da Parada</em> de Alan Turing, que prova a inexistência
+            de um algoritmo universal capaz de prever falhas ou travamentos
+            (loops infinitos) em todos os cenários.
+          </p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8 items-center">
+          <div
+            class="bg-white p-6 rounded-xl shadow-sm border border-slate-200"
+          >
+            <h3 class="text-xl font-semibold mb-3 text-slate-800">
+              O Problema da Parada (Halting Problem)
+            </h3>
+            <p class="text-slate-600 mb-4">
+              Formulado na década de 1930, o problema questiona: dado um código
+              e uma entrada, existe um super algoritmo capaz de prever, com 100%
+              de certeza, se esse código irá parar de rodar ou entrará em um
+              loop infinito?
+            </p>
+            <p
+              class="text-slate-600 font-semibold text-red-700 bg-red-50 p-3 rounded-lg border border-red-100"
+            >
+              Resposta de Turing: É matematicamente impossível. O problema é
+              INDECIDÍVEL. Se IAs e robôs são Turing-completos, eles herdam essa
+              limitação irrevogável.
+            </p>
+          </div>
+
+          <div
+            class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 text-center"
+          >
+            <h3 class="text-xl font-semibold mb-6 text-slate-800">
+              Simulador de Fita de Turing
+            </h3>
+            <div class="turing-tape mb-4" id="turing-tape-container">
+              <div class="tape-cell">0</div>
+              <div class="tape-cell">1</div>
+              <div class="tape-cell active-cell">1</div>
+              <div class="tape-cell">0</div>
+              <div class="tape-cell">1</div>
+            </div>
+            <div class="text-sm text-slate-500 mb-4 h-6" id="turing-status">
+              Lendo estado...
+            </div>
+            <button
+              id="btn-turing"
+              class="bg-teal-700 hover:bg-teal-800 text-white px-6 py-2 rounded-md font-semibold transition-colors"
+            >
+              Iniciar Execução Indecidível
+            </button>
+          </div>
+        </div>
+      </section>
+
+      <section id="aplicacao" class="tab-content hidden animate-fade-in">
+        <div class="mb-8">
+          <h2
+            class="text-3xl font-bold text-slate-800 mb-4 border-l-4 border-teal-600 pl-4"
+          >
+            Complexidade e a "Caixa-Preta"
+          </h2>
+          <p class="text-lg leading-relaxed text-slate-600 mb-6">
+            Nesta seção, transpomos a teoria de Turing para os Sistemas a
+            Eventos Discretos (SEDs) práticos. Mostramos como arquiteturas de
+            controle descentralizadas e o uso de Redes Neurais Profundas (IA)
+            exacerbam o problema da previsibilidade. A IA atua como uma
+            "caixa-preta", operando em ambientes caóticos e contínuos, tornando
+            a tradução para um modelo discreto e a prova de sua parada um
+            desafio colossal e muitas vezes impossível.
+          </p>
+        </div>
+
+        <div
+          class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-8"
+        >
+          <h3 class="text-xl font-semibold mb-2 text-center text-slate-800">
+            Evolução da Complexidade vs. Previsibilidade Garantida
+          </h3>
+          <p class="text-center text-sm text-slate-500 mb-6">
+            À medida que a autonomia aumenta (IA, Redes Neurais), a garantia
+            matemática de que o sistema não travará (previsibilidade absoluta)
+            cai drasticamente devido a limites computacionais.
+          </p>
+
+          <div class="chart-container">
+            <canvas id="complexityChart"></canvas>
+          </div>
+        </div>
+
+        <div class="grid md:grid-cols-3 gap-6">
+          <div class="bg-slate-50 p-5 rounded-lg border border-slate-200">
+            <div class="text-3xl mb-2">&#9881;</div>
+            <h4 class="font-bold text-slate-800 mb-2">
+              Controle Descentralizado
+            </h4>
+            <p class="text-sm text-slate-600">
+              Problemas de observação e diagnóstico distribuídos foram provados
+              como equivalentes a Máquinas de Turing. Logo, garantir controle
+              perfeito é indecidível.
+            </p>
+          </div>
+          <div class="bg-slate-50 p-5 rounded-lg border border-slate-200">
+            <div class="text-3xl mb-2">&#129504;</div>
+            <h4 class="font-bold text-slate-800 mb-2">IA como Caixa-Preta</h4>
+            <p class="text-sm text-slate-600">
+              Redes neurais em carros autônomos lidam com entradas caóticas. Não
+              explicam a lógica dedutiva aprendida, tornando o mapeamento para
+              SEDs finitos uma tarefa incerta.
+            </p>
+          </div>
+          <div class="bg-red-50 p-5 rounded-lg border border-red-200">
+            <div class="text-3xl mb-2">&#9888;</div>
+            <h4 class="font-bold text-red-800 mb-2">O Risco Catastrófico</h4>
+            <p class="text-sm text-red-700">
+              A impossibilidade de prever a parada cria o risco real do software
+              entrar em um loop de recálculo (congelar) diante de cenários
+              inéditos no mundo físico.
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="verificacao" class="tab-content hidden animate-fade-in">
+        <div class="mb-8">
+          <h2
+            class="text-3xl font-bold text-slate-800 mb-4 border-l-4 border-teal-600 pl-4"
+          >
+            Verificação Formal na Robótica Espacial
+          </h2>
+          <p class="text-lg leading-relaxed text-slate-600 mb-6">
+            Se prever tudo é impossível, como enviamos robôs a Marte? Esta seção
+            aborda a <strong>Verificação Formal (Model Checking)</strong>. Como
+            a latência de 24 minutos impede o controle manual, rovers dependem
+            de autonomia isolada. Explicamos que a engenharia utiliza modelagem
+            lógica e redes bayesianas para obter garantias probabilísticas.
+            Contudo, evidenciamos o paradoxo central: verificamos abstrações
+            (modelos finitos), mas os robôs operam na realidade física (contínua
+            e imprevisível).
+          </p>
+        </div>
+
+        <div class="grid md:grid-cols-2 gap-8 items-center">
+          <div>
+            <div
+              class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 mb-6"
+            >
+              <h3 class="text-xl font-semibold mb-3 text-slate-800">
+                O Paradoxo do Modelo vs. Realidade
+              </h3>
+              <p class="text-slate-600 mb-4">
+                Para aplicar verificação matemática (evitando a explosão de
+                estados), precisamos simplificar o ambiente. A prova matemática
+                atesta a segurança do <em>modelo</em>, não do mundo físico.
+              </p>
+              <ul class="space-y-3">
+                <li class="flex items-start">
+                  <span class="text-teal-600 mr-2 font-bold">✓</span>
+                  <span class="text-sm text-slate-700"
+                    ><strong>Modelo:</strong> Variáveis discretas, limites
+                    conhecidos, comportamento decidível.</span
+                  >
+                </li>
+                <li class="flex items-start">
+                  <span class="text-red-600 mr-2 font-bold">✕</span>
+                  <span class="text-sm text-slate-700"
+                    ><strong>Realidade:</strong> Poeira, falha mecânica, luz
+                    contínua, interferência (Não-determinismo).</span
+                  >
+                </li>
+              </ul>
+            </div>
+          </div>
+
+          <div
+            class="bg-white p-6 rounded-xl shadow-sm border border-slate-200"
+          >
+            <h3 class="text-lg font-semibold text-center mb-2">
+              Desvio entre Matemática e Física (Missões Marcianas)
+            </h3>
+            <div class="chart-container" style="height: 300px">
+              <canvas id="radarChart"></canvas>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="caso" class="tab-content hidden animate-fade-in">
+        <div class="mb-8">
+          <h2
+            class="text-3xl font-bold text-slate-800 mb-4 border-l-4 border-teal-600 pl-4"
+          >
+            Estudo de Caso: Livelock e o Fail-Safe
+          </h2>
+          <p class="text-lg leading-relaxed text-slate-600 mb-6">
+            A teoria abstrata encontra o chão de fábrica. Esta seção ilustra
+            ativamente uma falha computacional gerando dano físico em um armazém
+            logístico. O usuário simulará um <strong>Livelock</strong>: quando
+            variáveis do mundo real mudam tão rápido que o algoritmo de um robô
+            AGV tenta recalcular rotas eternamente sem concluir (Problema da
+            Parada). Finalmente, demonstramos a solução de engenharia: assumir a
+            indecidibilidade e usar hardwares burros, como o
+            <strong>Watchdog Timer</strong>, para forçar uma parada segura.
+          </p>
+        </div>
+
+        <div
+          class="bg-white p-6 rounded-xl shadow-sm border border-slate-200 overflow-hidden"
+        >
+          <div
+            class="flex flex-col md:flex-row justify-between items-center mb-4 gap-4"
+          >
+            <h3 class="text-xl font-semibold text-slate-800">
+              Simulação de Livelock Logístico
+            </h3>
+            <button
+              id="btn-simulate"
+              class="bg-slate-800 hover:bg-slate-900 text-white px-6 py-2 rounded-md font-semibold transition-colors shadow-md"
+            >
+              Executar Cenário Crítico
+            </button>
+          </div>
+
+          <div class="relative w-full overflow-hidden rounded-lg">
+            <canvas id="agv-canvas" width="800" height="400"></canvas>
+
+            <div
+              id="watchdog-panel"
+              class="absolute top-4 right-4 bg-white/90 backdrop-blur border border-slate-300 p-3 rounded-lg shadow-lg hidden"
+            >
+              <div
+                class="text-xs font-bold text-slate-500 uppercase tracking-wider mb-1"
+              >
+                Watchdog Timer (Hardware)
+              </div>
+              <div class="w-48 h-3 bg-slate-200 rounded-full overflow-hidden">
+                <div
+                  id="watchdog-bar"
+                  class="h-full bg-red-600 w-0 transition-all"
+                ></div>
+              </div>
+              <div
+                id="watchdog-status"
+                class="text-sm font-semibold mt-1 text-slate-700"
+              >
+                Monitorando IA...
+              </div>
+            </div>
+
+            <div
+              id="livelock-alert"
+              class="absolute inset-0 flex items-center justify-center bg-red-900/40 backdrop-blur-sm hidden"
+            >
+              <div
+                class="bg-white p-6 rounded-xl shadow-2xl text-center max-w-sm border-2 border-red-600"
+              >
+                <div class="text-4xl mb-2">&#9888;</div>
+                <h4 class="text-xl font-bold text-red-700 mb-2">
+                  Falha de Previsão
+                </h4>
+                <p class="text-slate-600 text-sm">
+                  Tempo real exaurido. O sistema entrou em Livelock calculando a
+                  heurística e perdeu o limite de frenagem física.
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div class="mt-6 grid md:grid-cols-2 gap-4">
+            <div class="p-4 bg-slate-50 rounded border border-slate-200">
+              <strong class="block text-slate-800 mb-1"
+                >O Problema (Livelock):</strong
+              >
+              <p class="text-sm text-slate-600">
+                Enquanto
+                <code
+                  class="bg-white px-1 border border-slate-300 rounded text-red-600"
+                  >rota == invalida</code
+                >, o sistema chama
+                <code
+                  class="bg-white px-1 border border-slate-300 rounded text-blue-600"
+                  >recalcular()</code
+                >. Devido às mudanças rápidas dos obstáculos (Humano e outro
+                AGV), o loop nunca para. Não ocorre "tela azul", mas o tempo
+                físico acaba.
+              </p>
+            </div>
+            <div class="p-4 bg-teal-50 rounded border border-teal-200">
+              <strong class="block text-teal-800 mb-1"
+                >A Solução (Fail-Safe):</strong
+              >
+              <p class="text-sm text-teal-700">
+                Engenheiros não solucionam a indecidibilidade, a contornam. O
+                <strong>Watchdog Timer</strong> (circuito físico independente)
+                corta a energia dos motores mecânicos se o software não
+                responder a tempo, parando na força bruta.
+              </p>
+            </div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer
+      class="bg-slate-900 text-slate-400 py-8 text-center text-sm border-t-4 border-teal-700"
+    >
+      <div
+        class="max-w-6xl mx-auto px-4 flex flex-col md:flex-row justify-between items-center"
+      >
+        <p>&copy; Trabalho de Sistemas a Eventos Discretos (SEDs)</p>
+        <p class="mt-4 md:mt-0 font-medium">
+          Equipe: Arthur Alvarenga, Guilherme Livianu, Breno Zanarelli, Wesley
+          Marques
+        </p>
+      </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <script type="module" src="/src/js/app.js"></script>
+  </body>
+</html>
